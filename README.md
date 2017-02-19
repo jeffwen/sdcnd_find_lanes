@@ -1,2 +1,4 @@
-# sdcnd_find_lanes
-Find lane lines using canny edge detection, hough transform, and image masking
+# Find Lane Lines
+This project uses canny edge detection, hough transform, and image masking to find lane lines from video footage. 
+
+
