@@ -183,7 +183,7 @@ It seems to have performed quite well! Below are a few other sample images of th
 
 _Sample processed images_
 ![solid_yellow](/test_images/solidYellowCurve_processed.jpg) 
-![solid_white](/test_images/solidYellowCurve_processed.jpg)
+![solid_white](/test_images/solidWhiteRight_processed.jpg)
 
 ## Applying Lane Finding to Videos
 Now that we can identify and mark the lane lines within the image supplied, we can use the algorithm on a video, which is just a sequence of images. If we just apply the pipeline directly to the video, we get the following. 
