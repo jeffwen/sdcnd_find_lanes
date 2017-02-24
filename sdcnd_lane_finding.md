@@ -169,7 +169,7 @@ def avg_lines(lines):
     
     return neg_lines, pos_lines
 	
-## removing the outliers on the x-axis
+## removing the outliers (adapted from http://stackoverflow.com/questions/11686720/is-there-a-numpy-builtin-to-reject-outliers-from-a-list)
 def to_keep_index(obs, std=1.5):
     return np.array(abs(obs - np.mean(obs)) < std*np.std(obs))
 ```
