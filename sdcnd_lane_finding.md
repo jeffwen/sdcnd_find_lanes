@@ -170,8 +170,8 @@ def avg_lines(lines):
     return neg_lines, pos_lines
 	
 ## removing the outliers on the x-axis
-def to_keep_index(points, m=1.5):
-    return np.array(abs(points - np.mean(points)) < m * np.std(points))
+def to_keep_index(obs, std=1.5):
+    return np.array(abs(obs - np.mean(obs)) < std*np.std(obs))
 ```
 
 The above function calculates the slope, intercept, and line length of each line segment. At this point, we can take the average lane lines from the above function and plot the lane lines onto the original image. 
