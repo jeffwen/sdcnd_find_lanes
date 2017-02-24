@@ -21,8 +21,11 @@ To start with, images came as screenshots from an onboard video feed.
 
 The first step that I took was to turn the image to grayscale to make it easier to work, namely to reduce the number of channels to work with. However, when dealing with more challenging images such as lane lines that are on non-contrasting backgrounds (white or gray tarmac), the eventual pipeline for lane linea detection does not perform well. In order to improve the performance, I switched to using [hue, saturation, and light](https://en.wikipedia.org/wiki/HSL_and_HSV#HSL) color space, which is better able to highlight the yellow and white lane lines.
 
-Grayscale vs. HSL color space
-![gray](/extra_media/challengeShadow_gray.jpg) ![hsl](/extra_media/challengeShadow_hlsimage_pyplot.jpg)
+_Grayscale_
+![gray](/extra_media/challengeShadow_gray.jpg) 
+
+_HSL color space_
+![hsl](/extra_media/challengeShadow_hlsimage_pyplot.jpg)
 
  In the above image, we can see that the yellow lane is very clearly highlighted and the white line markings are also captured well when compared to the grayscale image. However, to further improve the performance of the processing pipeline, we can also select out the colors that we know we care about (in this case the yellow and white lines, which are now blue and green)
 
@@ -44,6 +47,7 @@ With the above HSL image, we can now try to isolate the yellow and the white lin
 
 ## Edge Detection
 
+_HSL color selection_
 ![hsl](/extra_media/challengeShadow_hsl.jpg)
 
 Given the above image, the goal is to pick out the lane lines. In order to do this, I use the [canny edge detector](https://en.wikipedia.org/wiki/Canny_edge_detector) algorithm. In short, the algorithm:
@@ -56,16 +60,21 @@ Given the above image, the goal is to pick out the lane lines. In order to do th
 	
 While, the canny edge detector automatically applies [gaussian blur](https://en.wikipedia.org/wiki/Gaussian_blur), I applied gaussian blur outside of the edge detector so that I could have more freedom with the kernel parameter. After running the image through the blurring and edge detection functions, the image is as follows. Note, the input image to this is the HSL color converted image. 
 
+_HSL color selection with canny edge detection_
 ![hsl_canny](/extra_media/challengeShadow_hslcanny.jpg)
 
 With the image above, we see that the lane lines are pretty well identified. It took a bit of trial and error to find suitable thresholds for the canny edge detector though the creator John Canny recommended a ratio of 1:2 or 1:3 for the low vs. high threshold. Although the image above seems to mark the lane lines quite well, there is still a lot of noise surrounding the lane that we do not care about. In order to address this, we can apply a region mask to just keep the area that we know contains the lane lines. 
 
+_Region masking_
 ![region_bounds](/extra_media/challengeShadow_regionmask.jpg)
 
 After applying the mask to the canny image, we get the following output. We can contrast this with the gray image after canny edge detection and the region selection. 
 
-![region_canny](/extra_media/challengeShadow_regioncanny.jpg) 
+_Grayscale image with canny edge detection and region masking_
 ![region_canny_gray](/extra_media/challengeShadow_grayregioncanny.jpg) 
+
+_HSL color selection with canny edge detection and region masking_
+![region_canny](/extra_media/challengeShadow_regioncanny.jpg) 
 	
 As shown above, the HSL version provides a cleaner indication of the lane lines. Below are the functions used in processing the images.
 	
@@ -107,6 +116,7 @@ def region_of_interest(img, vertices):
 
 Now that we have a collection of edges, we need to identify the lane lines within the image. The [hough line transform](https://en.wikipedia.org/wiki/Hough_transform), which was first invented to identify lines within images, is great for this task. To learn more about this algorithm, this [blog](http://alyssaq.github.io/2014/understanding-hough-transform/) is a great resource. 
 
+_HSL color selection with canny edge detection, region masking, and hough transform
 ![hsl_hough](/extra_media/challengeShadow_hlshoughimage_pyplot.jpg)
 
 Pretty awesome! The lane lines have now been highlighted and boxed with the red lines. There are quite a few parameters that needed to be adjusted, but after adjusting the parameters, the algorithm is able to pick out the lines quite well. Note that the OpenCV version of the hough transform that we are using is the probabilistic version, which is an improvement over the original. In the IPython notebook, I use a different version of the `hough_lines` function that simple outputs the lines as a vector rather than overlaying the lines over the initial image. 
@@ -166,10 +176,12 @@ def to_keep_index(points, m=1.5):
 
 The above function calculates the slope, intercept, and line length of each line segment. At this point, we can take the average lane lines from the above function and plot the lane lines onto the original image. 
 
+_Final processed image_
 ![hsl_final](/test_images/challengeShadow_processed.jpg)
 
 It seems to have performed quite well! Below are a few other sample images of the outputs from the lane finding pipeline. 
 
+_Sample processed images_
 ![solid_yellow](/test_images/solidYellowCurve_processed.jpg) 
 ![solid_white](/test_images/solidYellowCurve_processed.jpg)
 
