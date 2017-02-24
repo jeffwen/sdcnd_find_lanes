@@ -40,7 +40,7 @@ def color_selection(image):
 ```
 In the above code, I first convert the color map from RGB to HSL. Then I use the `inRange` function provided by OpenCV to select colors that fall into the white and yellow ranges. After that I combine the white and yellow masks together with the `bitwise_or` function. 
 
-With the above HSL image on the right, we can now try to isolate the yellow and the white lines. While there are many different techniques that can be utilized here, I chose to detect the edges within the image using the Canny edge detection algorithm. 
+With the above HSL image, we can now try to isolate the yellow and the white lines. While there are many different techniques that can be utilized here, I chose to detect the edges within the image using the Canny edge detection algorithm. 
 
 ## Edge Detection
 
