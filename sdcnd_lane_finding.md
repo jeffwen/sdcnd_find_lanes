@@ -4,26 +4,27 @@
 
 The ultimate goal of this project was to be able to identify lane lines in both images and videos. Namely, to develop a pipeline that utilizes different computer vision techniques to mark the location of lane lines. The approach that I took explored multiple techniques to obtain the best results:
 
-	* Color selection with OpenCV with different color maps
-		* Grayscale 
-		* Hue, saturation and light
-	* Gaussian blur to reduce noise
-	* Canny edge detection
-	* Hough line transformation
-	* Moving average of previous lane lines 
+* Color selection with OpenCV with different color maps
+   	* Grayscale 
+   	* Hue, saturation, and light
+* Gaussian blur to reduce noise
+* Canny edge detection
+* Hough line transformation
+* Moving average of previous lane lines 
 	
 ## Color Manipulation
 
 To start with, images came as screenshots from an onboard video feed.
 
-![lane1](/test_images/solidWhiteRight.jpg) ![lane2](/test_images/solidYellowLeft.jpg)
+![lane1](/test_images/solidWhiteRight.jpg) 
+![lane2](/test_images/solidYellowLeft.jpg)
 
 The first step that I took was to turn the image to grayscale to make it easier to work, namely to reduce the number of channels to work with. However, when dealing with more challenging images such as lane lines that are on non-contrasting backgrounds (white or gray tarmac), the eventual pipeline for lane linea detection does not perform well. In order to improve the performance, I switched to using [hue, saturation, and light](https://en.wikipedia.org/wiki/HSL_and_HSV#HSL) color space, which is better able to highlight the yellow and white lane lines.
 
 Grayscale vs. HSL color space
 ![gray](/extra_media/challengeShadow_gray.jpg) ![hsl](/extra_media/challengeShadow_hlsimage_pyplot.jpg)
 
- In the above image, we can see that the yellow lane is very clearly highlighted and the white line markings are also captured well when compared to the grayscale image. However, to further improve the performance of the processing pipeline, we can also select out the colors that we know we care about (in this case the yellow and white lines, which are now blue and )
+ In the above image, we can see that the yellow lane is very clearly highlighted and the white line markings are also captured well when compared to the grayscale image. However, to further improve the performance of the processing pipeline, we can also select out the colors that we know we care about (in this case the yellow and white lines, which are now blue and green)
 
 ```Python
 ## color selection for yellow and white, using the HSL color space
@@ -59,11 +60,12 @@ While, the canny edge detector automatically applies [gaussian blur](https://en.
 
 With the image above, we see that the lane lines are pretty well identified. It took a bit of trial and error to find suitable thresholds for the canny edge detector though the creator John Canny recommended a ratio of 1:2 or 1:3 for the low vs. high threshold. Although the image above seems to mark the lane lines quite well, there is still a lot of noise surrounding the lane that we do not care about. In order to address this, we can apply a region mask to just keep the area that we know contains the lane lines. 
 
-![region_bounds](/extra_media/challengeShadow_regionbox.jpg)
+![region_bounds](/extra_media/challengeShadow_regionmask.jpg)
 
 After applying the mask to the canny image, we get the following output. We can contrast this with the gray image after canny edge detection and the region selection. 
 
-![region_canny](/extra_media/challengeShadow_regioncanny.jpg) ![region_canny_gray](/extra_media/challengeShadow_regiongraycanny.jpg) 
+![region_canny](/extra_media/challengeShadow_regioncanny.jpg) 
+![region_canny_gray](/extra_media/challengeShadow_grayregioncanny.jpg) 
 	
 As shown above, the HSL version provides a cleaner indication of the lane lines. Below are the functions used in processing the images.
 	
@@ -168,12 +170,13 @@ The above function calculates the slope, intercept, and line length of each line
 
 It seems to have performed quite well! Below are a few other sample images of the outputs from the lane finding pipeline. 
 
-![solid_yellow](/test_images/solidYellowCurve_processed.jpg) ![solid_white](/test_images/solidYellowCurve_processed.jpg)
+![solid_yellow](/test_images/solidYellowCurve_processed.jpg) 
+![solid_white](/test_images/solidYellowCurve_processed.jpg)
 
 ## Applying Lane Finding to Videos
 Now that we can identify and mark the lane lines within the image supplied, we can use the algorithm on a video, which is just a sequence of images. If we just apply the pipeline directly to the video, we get the following. 
 
-[Lane Finding (Without Previous Averaging)](https://vimeo.com/205495473)
+- [Lane Finding (Without Previous Averaging)](https://vimeo.com/205495473)
 
 The video seems to show the lane lines without any problems, but when we take a closer look the lane line highlights are jittering and jumping across back and forth around the actual location of the lane line. While, the algorithm basically accomplishes the problem that we first set out to solve, maybe we can improve on this. 
 
@@ -250,9 +253,9 @@ class lane_detector:
 
 While the detector works fairly well for straight roads, there are limitations:
 
-	1. Curved Roads
-	2. Lane markings that are not yellow or white
-	3. Different perspective 
+1. Curved Roads
+2. Lane markings that are not yellow or white
+3. Different perspective 
 	
 In order to deal with these shortcomings, we would need to make the algorithm more robust to differences in the input video. For example, to deal with the curves in the road instead of setting a fixed length for the lane line highlights, which is currently 60% of the image height, we might be able to use the length of the identified line segment from th hough line transform as a proxy for how long the highlight should be. 
 
